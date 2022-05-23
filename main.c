@@ -25,7 +25,6 @@ int main(void)
 {
   TreeMap* mapaLibro = createTreeMap(lower_than_string);
   TreeMap* mapaLibroTitulos = createTreeMap(lower_than_string);
-  List* titulos = createList();
   List * listaBloqueo = createList();
  // GuardarListaBloqueo(listaBloqueo);
   
@@ -58,7 +57,7 @@ int main(void)
     {
     case 1:
     {
-      CargarDocumentos(mapaLibro, titulos,mapaLibroTitulos);
+      CargarDocumentos(mapaLibro,mapaLibroTitulos);
       break;
       
     }
@@ -69,7 +68,8 @@ int main(void)
     }
     case 3:
     {
-      //BuscarLibroporTitulo(mapaLibro);
+      BuscarLibroporTitulo(mapaLibro);
+      break;
     
     }
     case 4:
@@ -87,7 +87,8 @@ int main(void)
     }
     case 6:
     {
-       BuscarporPalabra(mapaLibro);
+      CalcularFrecuencia(mapaLibro);
+      BuscarporPalabra(mapaLibro);
       break;
     }
     case 7:

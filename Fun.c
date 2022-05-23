@@ -1,4 +1,4 @@
-  #include "Fun.h"
+#include "Fun.h"
 
 void leerListaBloqueo(Map * MapaBloqueo)
 {
@@ -6,31 +6,23 @@ void leerListaBloqueo(Map * MapaBloqueo)
   char bufer[15];         // Aquí vamos a ir almacenando cada línea
   while (fgets(bufer,15, archivo))
   {
-      // Aquí, justo ahora, tenemos ya la línea. Le vamos a remover el salto
         strtok(bufer, "\n");
-        // La imprimimos, pero realmente podríamos hacer cualquier otra cosa
-        //printf("La línea es: '%s'\n", bufer);
-        insertMap(MapaBloqueo,strdup(bufer),bufer);
+        insertMap(MapaBloqueo,strdup(bufer),bufer);//insertamos en mapa
   }
 }
 
 
-
-
-
 void listFiles(const char* dirname,TreeMap* mapaLibro, TreeMap* mapaLibroTitulos) {
+  //esta funcion se  accede a la carpeta donde estan los archivos
     
     DIR* dir = opendir(dirname);
     if (dir == NULL) {
         return;
     }
     struct dirent* entity;
-    //printf("Reading files in: %s\n", dirname);
 
     entity = readdir(dir);
-    while (entity != NULL) {
-        //printf("%hhd %s/%s\n", entity->d_type, dirname, entity->d_name);
-        //printf("%s\n" ,entity->d_name); 
+    while (entity != NULL) { 
         if (entity->d_type == DT_DIR && strcmp(entity->d_name, ".") != 0 && strcmp(entity->d_name, "..") != 0) {
             char path[100] = { 0 };
             strcat(path, dirname);
@@ -46,16 +38,10 @@ void listFiles(const char* dirname,TreeMap* mapaLibro, TreeMap* mapaLibroTitulos
 }
 
 
-
-
-
-
-
 void leerPalabras(char* carpeta,libro* lib)
 {
   Map * MapaBloqueo = createMap(is_equal_string);
   leerListaBloqueo(MapaBloqueo);
-  //printf("hola");
   FILE *fp = fopen (carpeta, "r");
   int cont = 0;
   char linea[200];
@@ -64,12 +50,9 @@ void leerPalabras(char* carpeta,libro* lib)
   bool flag = true;
   palabra* aux2 = (palabra*)malloc(sizeof(palabra));
   
-  //printf("TEXTO NUEVO\n\n\n\n\n\n\n\n\n\n\n\n");
   while (fgets (linea, 200, fp) != NULL) // Se lee la linea
   { 
-        //while(feof(fp)==0)//esta malo
-        //if(cont %100==0) printf("%d\n", cont); 
-        //{ 
+        
           char* aux = get_csv_field(linea, i); // Se obtiene el nombre
           while (aux != NULL)
           {
@@ -79,51 +62,32 @@ void leerPalabras(char* carpeta,libro* lib)
             {
               if (aux != NULL) 
               {
-  
                 aux2 = searchTreeMap(lib->mapaPalabras, aux);
-  
                 if(aux2 == NULL)
                 {
-                  //printf("entro null\n");
                   palabra* aux2 = (palabra*)malloc(sizeof(palabra));
                   strcpy(aux2->palabra,strdup(aux));
                   aux2->cant++;
                   insertTreeMap(lib->mapaPalabras,strdup(aux),aux2);
-                  //insertTreeMap(lib->mapaPalabras);
-                  //aux2->cant++;
+
                 }
-                else
-                {
-                  aux2->cant++;
-                  //printf("HOLAAAAAAAAAAAAA\n");
-                }         
+                else aux2->cant++;
               }
             }
             i++;
             aux = get_csv_field(linea, i);
           }
         cont++;
-        //}
     i=0;
 
   }
 }
 
 
-
-
-
-
-void CargarDocumentos(TreeMap* mapa,List* lista, TreeMap * mapaLibroTitulo)
+void CargarDocumentos(TreeMap* mapa, TreeMap * mapaLibroTitulo)
 {
-  char archivo[1000];
   listFiles("./Libros",mapa,mapaLibroTitulo);
 }
-
-
-
-
-
 
 void obtenerNombre(char *key,TreeMap* mapaLibros, TreeMap* mapaLibroTitulos)
 {
@@ -161,8 +125,6 @@ void obtenerNombre(char *key,TreeMap* mapaLibros, TreeMap* mapaLibroTitulos)
       cont++;
     }
     printf("%s\n", lib->titulo);
-    //printf("Se va a insertar al mapa\n");
-    
     insertTreeMap(mapaLibros,lib->Id,lib);
     insertTreeMap(mapaLibroTitulos,lib->titulo,lib);
     leerPalabras(carpeta,lib);
@@ -175,8 +137,7 @@ void obtenerNombre(char *key,TreeMap* mapaLibros, TreeMap* mapaLibroTitulos)
 
 
 void agregarLibros (TreeMap* mapaLibros,char* key, TreeMap* mapaLibroTitulo )
-{
-  //guardar key
+{//obtenemos los nombres le qutamos el autor
   libro * aux = (libro*)malloc(sizeof(libro));
   aux = (libro*)searchTreeMap(mapaLibros, key);
   
@@ -189,7 +150,7 @@ void agregarLibros (TreeMap* mapaLibros,char* key, TreeMap* mapaLibroTitulo )
   
 }
 char *get_csv_field (char * tmp, int k) 
-{
+{//leemos palabras
     int open_mark = 0;
     char* ret=(char*) malloc (100*sizeof(char));
     int ini_i=0, i=0;
@@ -227,62 +188,22 @@ char *get_csv_field (char * tmp, int k)
     return NULL;
 }
 
-
-
-
-
-
-
-void BuscarporPalabra(TreeMap * mapaLibro)
+void MostrarDocumentosOrdenados(TreeMap * mapaDesordenado)//mostramos documentos ordenados
 {
-  char pal[100];
-  
-  printf("ingresa una palabra : ");
-  scanf("%s",pal);
-  getchar();
-  palabra * aux = (palabra *)malloc(sizeof(palabra));
-  libro* Libro = (libro *)firstTreeMap(mapaLibro);
-  //printf("'%s'\n",pal);
-  while(Libro !=NULL)
-  {
-    //printf("%s\n", Libro->titulo );
-    aux=searchTreeMap(Libro->mapaPalabras,pal);
-    if(aux != NULL)
-    {
-      printf("%s\n",Libro->titulo);
-      
-    }
-    Libro = nextTreeMap(mapaLibro);
-  }
-  //CalcularFrecuencia(mapaLibro);
-  
-}
-
-
-
-
-
-
-void MostrarDocumentosOrdenados(TreeMap * mapaDesordenado)
-{
-
   libro* aux = (libro *)firstTreeMap(mapaDesordenado);
 
   while(aux!=NULL)
   {
     printf("Id : %s\n",aux->Id);
     printf("Titulo : %s\n",aux->titulo);
-    
+    printf("\n");
     aux = (libro *)nextTreeMap(mapaDesordenado);
   }
 }
 
-
-
-
-
 void CalcularCantDoc (TreeMap * mapaLibros, libro * aux)
 {
+  /*se calcula la cantidad de documentos en los que aprece la palabra (aux)*/
   libro * auxLibro = (libro*)malloc(sizeof(libro));
   palabra* auxPalabra = (palabra*)malloc(sizeof(palabra));
   palabra* auxPalabra2 = (palabra*)malloc(sizeof(palabra));
@@ -290,34 +211,29 @@ void CalcularCantDoc (TreeMap * mapaLibros, libro * aux)
 
   auxLibro = firstTreeMap(mapaLibros);
   auxPalabra = firstTreeMap(aux->mapaPalabras);
-  
-  
+  // va recorriendo todos los libros buscando la palabra
     while (auxPalabra != NULL)
     {
       auxLibro = firstTreeMap(mapaLibros);
       cont=0;
       while (auxLibro != NULL)
       {
-        //cont=0;
-        //printf("holaaaaaaaaa\n");
         auxPalabra2 = searchTreeMap(auxLibro->mapaPalabras,auxPalabra->palabra);
-        //printf("palabra %s\n", auxPalabra2->palabra);
         if (auxPalabra2 != NULL) 
         {
-          cont++;
-          //printf("palabra %s\n", auxPalabra2->palabra);
+          cont++; // si la encuentra se aumenta el contador
         }
         auxLibro = nextTreeMap(mapaLibros);
-        //printf("contadooooor 2 :%d\n",cont);
       }
-      //printf("contadoooor :%d\n",cont);
-      auxPalabra->cantidadDoc = cont;
-      auxPalabra = nextTreeMap(aux->mapaPalabras); 
+      auxPalabra->cantidadDoc = cont; //asignamos el contador a la variable cantidadDoc de cada palabra
+       auxPalabra = nextTreeMap(aux->mapaPalabras); //seguimos con  la siguiente palabra
     }
+  
 }
 
 void masRelevantes(TreeMap* mapaLibros,palabra* palabrarelev)
 {
+  //se ordenar de mayor a menor las 10 palabras con mayor relevancia
   char key[1000];
   libro * aux2 =  (libro*)malloc(sizeof(libro));
   palabra* pal  = (palabra*)malloc(sizeof(palabra));
@@ -330,7 +246,6 @@ void masRelevantes(TreeMap* mapaLibros,palabra* palabrarelev)
   pal = (palabra *)firstTreeMap(aux2->mapaPalabras);
   
   int i = 0;
-  //palabra* palabrarelev = (palabra*)calloc(9,sizeof(palabra));
   if(aux2 == NULL)
   {
     printf("Lo sentimos, el libro ingresado no pertenece a esta carpeta\n");
@@ -340,14 +255,14 @@ void masRelevantes(TreeMap* mapaLibros,palabra* palabrarelev)
   for(int j = 0; j < 10 ; j++)
   {
     bool esta = false;
+    //se van ordenando en un arreglo segun relevancia
    while(pal != NULL)
     {
       if(pal->relevancia > palabrarelev[j].relevancia)
       {
-        printf("hola");
         for(int i = 0; i < 10 ; i++)
         {
-          if(strcmp(palabrarelev[i].palabra,pal->palabra)==0) 
+          if(strcmp(palabrarelev[i].palabra,pal->palabra)==0) //se verifica si la palabra ya se encuentra 
            {
             esta = false;
              break;
@@ -357,8 +272,8 @@ void masRelevantes(TreeMap* mapaLibros,palabra* palabrarelev)
             
         }
         if(esta == true)
-        {
-          printf("hola\n");    //palabrafrec[j].palabra,  palabrafrec[j].frecuencia)  
+        {  
+          //se agrega la palabra a la posicion del arreglo
           strcpy(palabrarelev[j].palabra, pal->palabra);
           palabrarelev[j].relevancia = pal->relevancia;
         }
@@ -371,6 +286,7 @@ void masRelevantes(TreeMap* mapaLibros,palabra* palabrarelev)
     }
   }
   printf("palabras con mayor relevancia : \n");
+  //se printean las palabras
   for(int j = 0 ; j < 10; j++)
   {
     printf("%s %f\n", palabrarelev[j].palabra,  palabrarelev[j].relevancia);
@@ -378,11 +294,56 @@ void masRelevantes(TreeMap* mapaLibros,palabra* palabrarelev)
   
 }
 
+/*void calcularRelevancia(palabra* palabra, libro* libro, TreeMap* mapaLibro)
+{
+  esta funcion iba a ser implementada para mostrar los textos en buscar por palabra, por orden de relevancia 
+  CalcularCantDoc(mapaLibro, libro);
+  palabra->relevancia = (palabra->cant/libro->cant)*(log10(100/palabra->cantidadDoc));
+  printf("%s %f\n",palabra->palabra, palabra->relevancia);
+  //if (palabraaux != NULL)
+  //{
+       // printf("palabra : %s |||| relevancia : %f\n",palabraaux->palabra ,palabraaux->relevancia); 
+  //}
+  //palabraaux = nextTreeMap(aux->mapaPalabras);
+} */
 
+void BuscarporPalabra(TreeMap * mapaLibro)
+{
+  //se buscan los libros que contengan la palabra dada
+  char pal[100];
+  
+  printf("ingresa una palabra : ");
+  scanf("%s",pal);
+  getchar();
+  palabra * aux = (palabra *)malloc(sizeof(palabra));
+  //palabra * aux2 = (palabra *)malloc(sizeof(palabra));
+  //libro *Libro = (libro* )firstTreeMap(mapaLibro);
+  libro*  Libro2 = (libro *)firstTreeMap(mapaLibro);
+
+  //Libro = (libro *)firstTreeMap(mapaLibro);
+ // aux=searchTreeMap(Libro->mapaPalabras,pal);
+  
+  while(Libro2 !=NULL)
+  {
+    //printf("%s\n", Libro->titulo );
+    aux=searchTreeMap(Libro2->mapaPalabras,pal);
+
+    if(aux != NULL)
+    {
+      printf("%s\n", Libro2->titulo );
+    }
+    //Libro = nextTreeMap(mapaLibro); 
+    Libro2 = nextTreeMap(mapaLibro); 
+
+  }
+ 
+  
+}
 
 void PalabrasRelevantes(TreeMap* mapaLibro, TreeMap* mapaLibroTitulos)
 {
   //CalcularCantDoc(mapaLibroTitulos);
+  //Calcula la relevancia de las palabras
  palabra* palabrarelev = (palabra*)calloc(9,sizeof(palabra));
   
   libro * aux = (libro*) malloc(sizeof(libro));
@@ -392,63 +353,52 @@ void PalabrasRelevantes(TreeMap* mapaLibro, TreeMap* mapaLibroTitulos)
   scanf("%s", id);
   getchar();
   
-
   aux = searchTreeMap(mapaLibro,id);
   if (aux != NULL)
   {
-    printf("entro\n");
     CalcularCantDoc(mapaLibro, aux);
-    printf("salio\n");
-    
   }
   
-    //CalcularCantDoc(mapaLibroTitulos, aux);
   
   palabra* palabraaux = (palabra*)malloc(sizeof(palabra));  
   palabraaux = firstTreeMap(aux->mapaPalabras);
 
+  //si se encuentra la palabra en el mapa, se calcula su relevancia segun formula
   while (palabraaux != NULL )
   { 
      
       palabraaux->relevancia = (palabraaux->cant/aux->cant)*(log10(100/palabraaux->cantidadDoc));
-      if (palabraaux != NULL)
-      {
-       // printf("palabra : %s |||| relevancia : %f\n",palabraaux->palabra ,palabraaux->relevancia); 
-      }
       palabraaux = nextTreeMap(aux->mapaPalabras);
   }  
   masRelevantes(mapaLibro,palabrarelev);
   
 }
-//mostrar los 10 titulos con más altas frecuencias en orden
 
 
 void CalcularFrecuencia(TreeMap * mapaLibro)
 {
+  //Se saca el primer libro de el mapa
   libro* libro = firstTreeMap(mapaLibro);
+  //se obtiene la primera palabra de el Mapa.
   palabra* pal = (palabra *)firstTreeMap(libro->mapaPalabras);
-  //palabra* auxpal = (palabra *)malloc(sizeof(palabra));
   char auxpal[1000];
   int cont;
   float fre ;
   
   while(libro != NULL || pal != NULL)
   {
+    // se inicializa la cant total de palabras en el libro
     libro->cant = 0;
     while(pal != NULL)
     {
-      //CalcularCantDoc(mapaLibro,pal);
+      //avanzamos en el mapa palabras y se actualiza la cantidad
       libro->cant = libro->cant + pal->cant;
       strcpy(auxpal,pal->palabra);
-      //auxpal = pal;
-      
-     // printf("palabra: %s\n",pal->palabra);
       pal = nextTreeMap(libro->mapaPalabras);
     }
     libro = nextTreeMap(mapaLibro);
     if (libro != NULL) pal = (palabra *)firstTreeMap(libro->mapaPalabras);
   }
- // CalcularCantDoc(mapaLibro,pal);
   libro = firstTreeMap(mapaLibro);
   pal = (palabra *)firstTreeMap(libro->mapaPalabras);
   cont = 0;
@@ -458,8 +408,8 @@ void CalcularFrecuencia(TreeMap * mapaLibro)
 
     while(pal != NULL)
     {
+      //se calcula la frecuencia por palabra
       pal->frecuencia = ((pal->cant) / (libro->cant)); 
-      //CalcularRelevancia(mapaLibro,pal);
       pal = nextTreeMap(libro->mapaPalabras);
     }
     libro = nextTreeMap(mapaLibro);
@@ -469,21 +419,11 @@ void CalcularFrecuencia(TreeMap * mapaLibro)
   pal = (palabra *)firstTreeMap(libro->mapaPalabras);
   cont = 0;
 
-  //CalcularRelevancia(mapaLibro);
- //CalcularCantDoc(mapaLibro,auxpal,pal);
-
-
-
-  
   while(libro != NULL || pal != NULL)
   {
 
     while(pal != NULL)
     {
-     // CalcularCantDoc(mapaLibro,pal);
-      //printf("palabra = %s\n", pal->palabra);
-      //printf("Frecuencia = %f\n", pal->frecuencia);
-      //CalcularCantDoc(mapaLibro,pal);
       pal = nextTreeMap(libro->mapaPalabras);
     }
     libro = nextTreeMap(mapaLibro);
@@ -494,6 +434,7 @@ void CalcularFrecuencia(TreeMap * mapaLibro)
 
 void PalabrasMayorFrecuencia(TreeMap *mapaLibros)
 {
+  //buscaremos las 10 palabras con mayor frecuencia, usamos el metodo del arreglo
   libro * aux =  (libro*)malloc(sizeof(libro));
   aux = (libro *)firstTreeMap(mapaLibros);
   char key[1000];
@@ -514,7 +455,7 @@ void PalabrasMayorFrecuencia(TreeMap *mapaLibros)
   {
     printf("Lo sentimos, el libro ingresado no pertenece a esta carpeta\n");
   }
-  else
+  else //a traves de ciclos y comparaciones vamos ordenando en el arreglo las palabras
   {
   for(int j = 0; j < 10 ; j++)
   {
@@ -536,7 +477,6 @@ void PalabrasMayorFrecuencia(TreeMap *mapaLibros)
         }
         if(esta == true)
         {
-          //printf("hola\n");    //palabrafrec[j].palabra,  palabrafrec[j].frecuencia)  
           strcpy(palabrafrec[j].palabra, pal->palabra);
           palabrafrec[j].frecuencia = pal->frecuencia;
         }
@@ -549,50 +489,13 @@ void PalabrasMayorFrecuencia(TreeMap *mapaLibros)
     }
   }
    printf("palabras con mayor frecuencia : \n");
-  for(int j = 0 ; j < 10; j++)
+  for(int j = 0 ; j < 10; j++) //imprimimos 10 palabras con mayor frecuencia
   {
     printf("%s %f\n", palabrafrec[j].palabra,  palabrafrec[j].frecuencia);
   }
 }
 
-
-/*
-  if(aux == NULL)
-  {
-    printf("Lo sentimos, el libro ingresado no pertenece a esta carpeta\n");
-  }
-  else
-  {
-    while(aux != NULL)
-    { 
-      while(pal != NULL)
-      {
-        if(pal->frecuencia > palabrafrec[i]->frecuencia)
-        {
-          for(int j = 0; j < 10 ; j++)
-          {
-            if(palabrafrec[j]->frecuencia != pal->frecuencia) 
-            {
-              //palabrafrec[i]->frecuencia = pal->frecuencia;
-              //palabrafrec[i]->cant = pal->cant;
-              //palabrafrec[i]->relevancia = pal->relevancia;
-              //strcpy(palabrafrec[i]->palabra,pal->palabra);
-              printf("%s %f\n", pal->palabra,  pal->frecuencia);
-            }
-          }
-        }
-        pal = nextTreeMap(aux->mapaPalabras);
-      }
-      aux = firstTreeMap(mapaLibros);
-      i++;
-    }
-    printf("palabras con mayor frecuencia = ");
-    for(int j = 0 ; j < 10; j++)
-    {
-      printf("%s %f\n", palabrafrec[j]->palabra,  palabrafrec[j]->frecuencia);
-    }
-  }
-*/
+//INTENTO DE FUNCION MOSTRAR CONTEXTO
 /*void MostrarContexto()
 {
   char id[10];
@@ -601,7 +504,7 @@ void PalabrasMayorFrecuencia(TreeMap *mapaLibros)
   char contexto[1024];
   char palabra2;
   printf("Ingrese el id de el libro\n");
- // printf("Incluya el .txt\n");
+  printf("Incluya el .txt\n");
   scanf("%s", id);
   getchar();
   printf("Ingrese el id de el libro\n");
@@ -633,42 +536,64 @@ void PalabrasMayorFrecuencia(TreeMap *mapaLibros)
         printf("CONTEXTO : %s", contexto);
         
       }
-
     }
-    //
-  
-    
-    
-  
   }
   
-
-
-  
 }*/
-void BuscarLibroporTitulo(Map * mapaLibro)
+
+//No funciona el scanf, no sabemos porque sigue pidiendo datos.
+void BuscarLibroporTitulo(TreeMap * mapaLibro)
 {
-  char lineapalabras[50];
+  char lineapalabras[80];
   int cont = 0;
+  int i = 0 ;
+  char palabras[20];
   libro * lib =  (libro*)malloc(sizeof(libro));
   palabra * pal =  (palabra*)malloc(sizeof(palabra));
+  int isspace ;
   
   printf("Ingrese las palabras\n");
-  fgets(lineapalabras, 50, stdin);
-  //getchar();
-  printf("%s", lineapalabras);
+  fflush(stdin);
+  scanf("%80[^\n]s", lineapalabras);
+  fflush(stdin);
+  List* listaPalabras = createList();
 
   //Ciclo para sacar las palabras, guardar en lista y aumentar contador;
-
-
-
-  lib = firstMap(mapaLibro);
-  
+  char *token = strtok(lineapalabras, " ");
+  while (token != NULL)
+  {
+    pushBack(listaPalabras, token);
+    cont++;
+    token = strtok(NULL, " ");
+  }  
+  lib = (libro *) firstTreeMap(mapaLibro);
+  //se recorren todos los libros
   while(lib != NULL)
   {
-    
-    
-    
+    //se saca la primera palabra de la lista para ver comenzar la busqueda
+    strcpy(palabras, firstList(listaPalabras));
+    int j = 0;
+    bool todas = false;
+    //el ciclo se procesa por la cant de palabras ingresadas por el usuario
+    while(j <= cont)
+    {
+      pal = (palabra *)searchTreeMap(lib->mapaPalabras, palabras);
+      //si no se encuentra, ya no debe procesarse el libro
+      if(pal == NULL)
+      {
+        todas = false;
+        break;
+      }
+      else todas = true;
+      //se pasa a analizar la siguiente palabra
+      strcpy(palabras, nextList(listaPalabras));
+      j++;
+    }
+    //Si en el texto estaban todas las palabras, se imprime el libro
+    if(todas == true)
+    {
+      printf("%s\n", lib->titulo);
+    }
   }
 
 }
